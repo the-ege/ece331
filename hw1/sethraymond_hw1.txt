@@ -88,6 +88,4 @@ int main (int argc, char *argv[])
 	b) sudo apt-get remove sonic-pi
 	c) sudo apt-get remove scratch
 	d) sudo apt-get install git
-	e) #adafruit has a quick and painless setup for this:
-		curl -sLS https://apt.adafruit.com/add | sudo bash
-		sudo apt-get install avrdude
+	e) sudo apt-get install avrdude binutils gcc-avr avr-libc uisp

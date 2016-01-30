@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+
+$,=",";
+$\="\n";
+
+while (<STDIN>) {
+	last unless (/^[A-Z]/);
+}
+while (<STDIN>) {
+	next if (/^$/);
+}
+
+#not complete!
