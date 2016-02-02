@@ -2,10 +2,14 @@ Seth Raymond
 ECE331 Homework 2
 
 1.
-2.
+2. wget http://www.open.com.au/mikem/bcm2835/bcm2835-1.5.tar.gz
+   tar xzvf bcm2835.1.5.tar.gz
+   cd bcm2835-1.5
+   ./configure
+   make
+   sudo make install
 3.
 4.
 5.
 6.
 7.
-`
