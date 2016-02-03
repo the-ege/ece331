@@ -20,6 +20,12 @@ ECE331 Homework 2
 #include <sys/stat.h>
 #include <unistd.h>
 
+/*
+ * Program takes one command line argument as a glob pattern
+ * and returns the file permissions as hex for each file
+ * matched with the glob pattern.
+ */
+
 int main (int argc, char *argv[])
 {
 	glob_t glob_struct;
@@ -68,6 +74,11 @@ int main (int argc, char *argv[])
 	return 0;
 }
 
-5.
+5. /\$[0-9]+\.?[0-9]{0,3}$/
+   Minimum match is $0
+   Matches on a '$' character, one or more numbers (ranging from 0-9), either 0 or 1 periods, and up to three 0-9 characters (because gas prices typically go out to three decimal points).
 6.
+	a) Will match on '-' and a 0-9 character with zero or one leading zeros between the number and the '-' character,
+	or any number between 10 and 39, or on any number between 40 and 42.
+	b) Will not match anything because the start of line cannot come after the end of line. 
 7.

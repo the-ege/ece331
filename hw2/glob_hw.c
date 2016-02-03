@@ -4,6 +4,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+/*
+ * Program takes one command line argument as a glob pattern
+ * and returns the file permissions as hex for each file
+ * matched with the glob pattern.
+ */
+
 int main (int argc, char *argv[])
 {
 	glob_t glob_struct;
