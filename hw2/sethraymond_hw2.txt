@@ -2,15 +2,33 @@ Seth Raymond
 ECE331 Homework 2
 
 1.
+
+#!/usr/bin/perl
+
+open(IN,"/usr/share/dict/words") or die "Cannot open dictionary\n";
+
+while(<IN>) {
+	chomp;
+	$words[length($_)]++; #each element holds num of words for that element's length
+}
+
+for ($i=0;$i<@words;$i++) {
+	printf("%02d",$i);
+	print " : " . "*" x (20*log($words[$i]+1)/log(10)) . "\n"; #scales to fit screen
+}
+
+close(IN);
+
 2. wget http://www.open.com.au/mikem/bcm2835/bcm2835-1.5.tar.gz
    tar xzvf bcm2835.1.5.tar.gz
    cd bcm2835-1.5
    ./configure
    make
    sudo make install
-3.
 
-
+3.  Found on www.regular-expressions.info/floatingpoint.html
+	a) 0
+	b) [+-]?[0-9]*\.?[0-9]+([eE][+-]?[0-9]+)?
 
 4.
 
@@ -50,7 +68,7 @@ int main (int argc, char *argv[])
 		return -3;
 	}
 	else if (status == GLOB_NOMATCH) {
-		printf("Glob returns no found matches!\n");
+			printf("Glob returns no found matches!\n");
 		return -4;
 	}
 
@@ -74,11 +92,41 @@ int main (int argc, char *argv[])
 	return 0;
 }
 
-5. /\$[0-9]+\.?[0-9]{0,3}$/
+5. \$[0-9]+(\.?[0-9]{2,3})?$
    Minimum match is $0
-   Matches on a '$' character, one or more numbers (ranging from 0-9), either 0 or 1 periods, and up to three 0-9 characters (because gas prices typically go out to three decimal points).
+   Matches on a '$' character, one or more numbers (ranging from 0-9), either 0 or 1 periods,
+   and up to three 0-9 characters (because gas prices typically go out to three decimal points).
 6.
 	a) Will match on '-' and a 0-9 character with zero or one leading zeros between the number and the '-' character,
 	or any number between 10 and 39, or on any number between 40 and 42.
-	b) Will not match anything because the start of line cannot come after the end of line. 
+	b) Will match on exactly four of the string "!@#$%^&*", a space,
+	then any multiple of four (excluding zero) copies of the string "!@#$%^&*".
 7.
+
+#!/usr/bin/perl
+
+# Code taken from ECE331 website and edited for homework 2 question 7
+
+open(IN,"./netlist.in");
+
+while (<IN>) {
+	next if (/^$/); #remove blank lines
+	next if (1 .. /^Net/); #skip lines until column headers
+	chomp;
+	s/@\d+//; #matches on @[0-9]+, or an '@' char with one or more 0-9 chars
+	@x=split(' '); # each element of list x is loaded from the line, separated by spaces
+	if ($#x==4) { #if the last element of the list x is 4,
+		$net=shift@x; #return the first element of the list x to store in $net, shorten x by 1 
+	}
+	push @{$nl{$net}},($x[0] . "-" . $x[1]); #nl is a hash with $net as a key to list values, done using references
+}
+
+foreach $k (sort(keys(%nl))) { 
+	print "$k "; #print the key
+	foreach $p (@{$nl{$k}}) {
+		print "$p "; #print the list of values corresponding to the key
+	}
+	print "\n";
+}
+
+close(IN);

@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+
+# Code taken from ECE331 website and edited for homework 2 question 7
+
+open(IN,"./netlist.in");
+
+while (<IN>) {
+	next if (/^$/); #remove blank lines
+	next if (1 .. /^Net/); #skip lines until column headers
+	chomp;
+	s/@\d+//; #matches on @[0-9]+, or an '@' char with one or more 0-9 chars
+	@x=split(' '); # each element of list x is loaded from the line, separated by spaces
+	if ($#x==4) { #if the last element of the list x is 4,
+		$net=shift@x; #return the first element of the list x to store in $net, shorten x by 1 
+	}
+	push @{$nl{$net}},($x[0] . "-" . $x[1]); #nl is a hash with $net as a key to list values, done using references
+}
+
+foreach $k (sort(keys(%nl))) { 
+	print "$k "; #print the key
+	foreach $p (@{$nl{$k}}) {
+		print "$p "; #print the list of values corresponding to the key
+	}
+	print "\n";
+}
+
+close(IN);

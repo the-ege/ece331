@@ -1,0 +1,390 @@
+Netlist
+
+Exported from project.sch at 19 Dec 2015 21:55:04
+
+EAGLE Version 7.3.0 Copyright (c) 1988-2015 CadSoft
+
+Net      Part     Pad      Pin        Sheet
+
++3V3     C1       1        1          1
+         C11      1        1          1
+         C2       1        1          1
+         C20      1        1          1
+         C4       1        1          1
+         C6       1        1          1
+         C7       1        1          1
+         C8       1        1          1
+         C9       1        1          1
+         IC4      8        V+         1
+         IC5      4        V+         1
+         JP11     1        1          1
+         JP5      1        1          1
+         JP6      1        1          1
+         JP7      1        1          1
+         JP9      1        1          1
+         L1       2        2          1
+         LED1     A        A          1
+         LED3     A        A          1
+         Q1       1        OE         1
+         Q1       4        VCC        1
+         R20      2        2          1
+         R5       2        2          1
+         R6       2        2          1
+         SJ1      2        2          1
+         U1       19       VCC        1
+         U1       31       VCC        1
+         U1       39       AVCC       1
+         U1       9        VCC        1
+         U2       3        !W         1
+         U2       7        !HOLD      1
+         U2       8        VCC        1
+         U3       1        VCC        1
+         U5       1        VDDIO      1
+         U5       14       VDD        1
+         U7       1        VDD        1
+         U8       5        FB         1
+         UX1      2        VIN        1
+
++5V0     C13      1        1          1
+         C14      1        1          1
+         C3       1        1          1
+         IC2      4        V+         1
+         IC3      2        VOUT       1
+         JP10     3        3          1
+         JP3      2        2          1
+         L2       2        2          1
+         LED4     A        A          1
+         R18      2        2          1
+
+3V3      UX1      9        3V3        1
+
+CLK_IN   Q1       3        FO         1
+         U1       37       PR1        1
+
+D+       R3       1        1          1
+         U1       27       PD7        1
+
+D-       R4       1        1          1
+         U1       26       PD6        1
+
+DAC0     IC2      3        +IN        1
+         U1       6        PB2        1
+
+DAC1     JP6      10       10         1
+         U1       7        PB3        1
+
+EN       R20      1        1          1
+         U1       14       PC4        1
+         U2       1        !S         1
+
+FIX      U1       10       PC0        1
+         UX1      6        FIX        1
+
+GND      C1       2        2          1
+         C10      2        2          1
+         C11      2        2          1
+         C12      2        2          1
+         C13      2        2          1
+         C14      2        2          1
+         C2       2        2          1
+         C20      2        2          1
+         C4       2        2          1
+         C5       2        2          1
+         C6       2        2          1
+         C7       2        2          1
+         C8       2        2          1
+         C9       2        2          1
+         IC2      11       V-         1
+         IC3      1        GND        1
+         IC4      4        V-         1
+         IC5      11       V-         1
+         JP1      6        6          1
+         JP10     2        2          1
+         JP11     3        3          1
+         JP3      3        3          1
+         JP4      1        1          1
+         JP5      7        7          1
+         JP5      8        8          1
+         JP6      3        3          1
+         JP6      5        5          1
+         JP6      7        7          1
+         JP6      9        9          1
+         JP7      3        3          1
+         JP9      4        4          1
+         LED2     K        C          1
+         Q1       2        GND        1
+         R11      1        1          1
+         R15      1        1          1
+         R16      1        1          1
+         R17      1        1          1
+         R19      2        2          1
+         R21      1        1          1
+         R22      1        1          1
+         R23      1        1          1
+         R24      2        2          1
+         R25      1        1          1
+         R26      1        1          1
+         R8       1        1          1
+         R9       1        1          1
+         U1       18       GND        1
+         U1       30       GND        1
+         U1       38       GND        1
+         U1       40       PA0        1
+         U1       8        GND        1
+         U2       4        VSS        1
+         U3       3        GND        1
+         U5       10       GND        1
+         U5       12       GND        1
+         U5       5        GND        1
+         U5       7        SA0        1
+         U7       4        GND        1
+         U8       10       PGND       1
+         U8       3        GND        1
+         U8       6        LBI        1
+         U8       7        SYNC       1
+         U9       10       PGND       1
+         U9       3        GND        1
+         U9       6        LBI        1
+         U9       7        SYNC       1
+         UX1      3        GND        1
+         X1       5        5          1
+
+MISO     U1       16       PC6        1
+         U2       2        Q          1
+
+MOSI     U1       15       PC5        1
+         U2       5        D          1
+
+N$1      R3       2        2          1
+         X1       3        3          1
+
+N$2      R4       2        2          1
+         X1       2        2          1
+
+N$3      LED1     K        C          1
+         R1       1        1          1
+
+N$4      IC5      10       +IN        1
+         JP6      2        2          1
+         TP2      TP       TP         1
+
+N$5      IC5      12       +IN        1
+         JP6      4        4          1
+
+N$6      R7       1        1          1
+         R8       2        2          1
+         TP1      TP       TP         1
+
+N$8      R1       2        2          1
+         U1       36       PR0        1
+
+N$9      LED2     A        A          1
+         R2       1        1          1
+
+N$10     JP1      2        2          1
+         SJ1      1        1          1
+
+N$11     F1       1        1          1
+         JP4      2        2          1
+
+N$12     C10      1        1          1
+         C12      1        1          1
+         F1       2        2          1
+         IC3      3        VIN        1
+         R7       2        2          1
+         U8       1        VIN        1
+         U8       8        EN         1
+         U9       1        VIN        1
+         U9       8        EN         1
+
+N$13     LED3     K        C          1
+         R22      2        2          1
+
+N$14     LED4     K        C          1
+         R23      2        2          1
+
+N$15     IC4      5        +IN        1
+         U3       2        VOUT       1
+
+N$16     IC4      3        +IN        1
+         JP7      2        2          1
+
+N$17     IC5      3        +IN        1
+         JP6      6        6          1
+
+N$18     IC5      5        +IN        1
+         JP6      8        8          1
+
+N$23     U6       1        RGND       1
+         U6       3        RGND       1
+         X2       2@1      2          1
+         X2       2@2      2          1
+         X2       2@3      2          1
+         X2       2@4      2          1
+         X2       2@5      2          1
+         X2       2@6      2          1
+
+N$24     U6       2        RF         1
+         X2       1        1          1
+
+N$26     JP2      4        4          1
+         U6       7        TXD        1
+
+N$27     JP2      2        2          1
+         U6       5        VCC        1
+
+N$30     JP2      3        3          1
+         U6       6        GND        1
+
+N$31     JP2      1        1          1
+         U6       4        EN         1
+
+N$33     C5       1        1          1
+         U5       2        BYP        1
+
+N$34     R2       2        2          1
+         U1       33       PE3        1
+
+N$35     JP11     2        2          1
+         U1       32       PE2        1
+
+N$36     IC2      2        -IN        1
+         R10      1        1          1
+         R9       2        2          1
+
+N$37     L1       1        1          1
+         U8       9        SW         1
+
+N$38     IC2      1        OUT        1
+         JP3      4        4          1
+         R10      2        2          1
+
+N$49     L2       1        1          1
+         U9       9        SW         1
+
+N$55     JP8      2        2          1
+         U4       2        VOUT       1
+
+N$56     JP8      3        3          1
+         U4       3        GND        1
+
+N$57     JP8      1        1          1
+         U4       1        VCC        1
+
+N$58     IC2      5        +IN        1
+         JP10     1        1          1
+         R24      1        1          1
+
+N$59     IC2      10       +IN        1
+         JP10     4        4          1
+         R25      2        2          1
+
+N$60     IC2      9        -IN        1
+         R12      2        2          1
+         R16      2        2          1
+
+N$61     IC2      13       -IN        1
+         R13      2        2          1
+         R17      2        2          1
+
+N$62     IC2      6        -IN        1
+         R14      2        2          1
+         R15      2        2          1
+
+N$63     IC2      12       +IN        1
+         JP10     5        5          1
+         R26      2        2          1
+
+N$64     C3       2        2          1
+         R18      1        1          1
+         R19      1        1          1
+         U9       5        FB         1
+
+PA1      IC5      8        OUT        1
+         IC5      9        -IN        1
+         U1       41       PA1        1
+
+PA2      IC5      13       -IN        1
+         IC5      14       OUT        1
+         U1       42       PA2        1
+
+PA3      IC5      1        OUT        1
+         IC5      2        -IN        1
+         U1       43       PA3        1
+
+PA4      IC5      6        -IN        1
+         IC5      7        OUT        1
+         U1       44       PA4        1
+
+PA5      IC2      14       OUT        1
+         R13      1        1          1
+         U1       1        PA5        1
+
+PA6      IC2      8        OUT        1
+         R12      1        1          1
+         U1       2        PA6        1
+
+PA7      IC2      7        OUT        1
+         R14      1        1          1
+         U1       3        PA7        1
+
+PDI_CLK  JP1      5        5          1
+         U1       35       !RESET!/PDI 1
+
+PDI_DAT  JP1      1        1          1
+         U1       34       PDI        1
+
+PSS      U1       11       PC1        1
+         UX1      1        PPS        1
+
+RF_PTT   JP3      1        1          1
+         R11      2        2          1
+         U1       25       PD5        1
+
+RXD      JP5      4        4          1
+         U1       22       PD2        1
+
+RXD0     U1       12       PC2        1
+         UX1      5        TX         1
+
+SCL      JP9      2        2          1
+         R6       1        1          1
+         U1       29       PE1        1
+         U5       4        SCL        1
+         U7       3        SCL        1
+
+SCLK     R21      2        2          1
+         U1       17       PC7        1
+         U2       6        C          1
+
+SDA      JP9      3        3          1
+         R5       1        1          1
+         U1       28       PE0        1
+         U5       6        SDA        1
+         U7       2        SDA        1
+
+TCD0A    JP5      2        2          1
+         U1       20       PD0        1
+
+TCD0B    JP5      3        3          1
+         U1       21       PD1        1
+
+TCD1A    JP5      6        6          1
+         U1       24       PD4        1
+
+TEMP0    IC4      1        OUT        1
+         IC4      2        -IN        1
+         U1       4        PB0        1
+
+TEMP1    IC4      6        -IN        1
+         IC4      7        OUT        1
+         U1       5        PB1        1
+
+TXD      JP5      5        5          1
+         U1       23       PD3        1
+
+TXD0     U1       13       PC3        1
+         UX1      4        RX         1
+
+VBAT     UX1      7        VBAT       1
+
