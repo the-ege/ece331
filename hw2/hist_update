@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+
+open(IN,"/usr/share/dict/words") or die "Cannot open dictionary\n";
+
+while(<IN>) {
+	chomp;
+	$words[length($_)]++; #each element holds num of words for that element's length
+}
+
+for ($i=0;$i<@words;$i++) {
+	printf("%02d",$i);
+	print " : " . "*" x (20*log($words[$i]+1)/log(10)) . "\n"; #scales to fit screen
+}
+
+close(IN);

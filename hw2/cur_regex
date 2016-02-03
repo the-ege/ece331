@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+
+open(IN, "./currency") or die "cannot open!\n";
+
+while (<IN>) {
+	print "$1\n" if /(\$[0-9]+\.?[0-9]{0,3}$)/;
+}
+
+close(IN);

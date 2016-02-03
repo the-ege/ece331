@@ -32,12 +32,8 @@ int main (int argc, char *argv[])
 		return -4;
 	}
 
-	i = glob_struct.gl_offs;
-
-	return 0;
-
-	for (i=0;i<glob_struct->gl_offs;i++) {
-		status = stat(glob_struct->gl_pathv[i], &stat_struct); /* Call stat() on glob path, get info back*/
+	for (i=0;i<glob_struct.gl_pathc;i++) {
+		status = stat(glob_struct.gl_pathv[i], &stat_struct); /* Call stat() on glob path, get info back*/
 		/* Error checking */
 
 		if (status != 0) {
@@ -47,7 +43,7 @@ int main (int argc, char *argv[])
 
 		/* Print permissions in hex */
 
-		printf("0x%04x\n", stat_struct.st_mode);
+		printf("%s : 0x%04x\n", glob_struct.gl_pathv[i],stat_struct.st_mode);
 
 	}	
 
