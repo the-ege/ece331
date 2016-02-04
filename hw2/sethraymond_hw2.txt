@@ -50,7 +50,7 @@ int main (int argc, char *argv[])
 	struct stat stat_struct;
 	int status, i;
 
-	if (argc == 1 || argc > 2){ /* There is always at least one argument, the program name */
+	if (argc == 1 || argc > 2) { /* There is always at least one argument, the program name */
 		printf("Incorrect number of arguments!\n");
 		return -1;
 	}
@@ -61,14 +61,17 @@ int main (int argc, char *argv[])
 
 	if (status == GLOB_NOSPACE) {
 		printf("Glob returns out of memory error!\n");
+		globfree(&glob_struct);
 		return -2;
 	}
 	else if (status == GLOB_ABORTED) {
 		printf("Glob returns a read error!\n");
+		globfree(&glob_struct);
 		return -3;
 	}
 	else if (status == GLOB_NOMATCH) {
-			printf("Glob returns no found matches!\n");
+		printf("Glob returns no found matches!\n");
+		globfree(&glob_struct);
 		return -4;
 	}
 
@@ -92,10 +95,10 @@ int main (int argc, char *argv[])
 	return 0;
 }
 
-5. \$[0-9]+(\.?[0-9]{2,3})?$
+5. \$[0-9]+(\.[0-9]{2,3})?$
    Minimum match is $0
-   Matches on a '$' character, one or more numbers (ranging from 0-9), either 0 or 1 periods,
-   and up to three 0-9 characters (because gas prices typically go out to three decimal points).
+   Matches on a '$' character, one or more numbers (ranging from 0-9),
+   and a grouped period followed by two or three numbers (0-9) zero or one times.
 6.
 	a) Will match on '-' and a 0-9 character with zero or one leading zeros between the number and the '-' character,
 	or any number between 10 and 39, or on any number between 40 and 42.

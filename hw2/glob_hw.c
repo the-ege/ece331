@@ -16,7 +16,7 @@ int main (int argc, char *argv[])
 	struct stat stat_struct;
 	int status, i;
 
-	if (argc == 1 || argc > 2){ /* There is always at least one argument, the program name */
+	if (argc == 1 || argc > 2) { /* There is always at least one argument, the program name */
 		printf("Incorrect number of arguments!\n");
 		return -1;
 	}
@@ -27,14 +27,17 @@ int main (int argc, char *argv[])
 
 	if (status == GLOB_NOSPACE) {
 		printf("Glob returns out of memory error!\n");
+		globfree(&glob_struct);
 		return -2;
 	}
 	else if (status == GLOB_ABORTED) {
 		printf("Glob returns a read error!\n");
+		globfree(&glob_struct);
 		return -3;
 	}
 	else if (status == GLOB_NOMATCH) {
 		printf("Glob returns no found matches!\n");
+		globfree(&glob_struct);
 		return -4;
 	}
 
