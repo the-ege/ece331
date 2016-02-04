@@ -100,10 +100,10 @@ int main (int argc, char *argv[])
    Matches on a '$' character, one or more numbers (ranging from 0-9),
    and a grouped period followed by two or three numbers (0-9) zero or one times.
 6.
-	a) Will match on '-' and a 0-9 character with zero or one leading zeros between the number and the '-' character,
-	or any number between 10 and 39, or on any number between 40 and 42.
-	b) Will match on exactly four of the string "!@#$%^&*", a space,
-	then any multiple of four (excluding zero) copies of the string "!@#$%^&*".
+
+	a) Will match any single digit with or without a leading zero as long as there is a hyphen in front (ex, -1 and -01 both match).
+	Also matches on any two digit integer from 10 to 42.
+	b) Will match on a set of four of any !@#$%^&* symbols, a space, and any multiple of four (excluding zero) of the !@#$%^&* symbols.
 7.
 
 #!/usr/bin/perl
@@ -113,13 +113,13 @@ int main (int argc, char *argv[])
 open(IN,"./netlist.in");
 
 while (<IN>) {
-	next if (/^$/); #remove blank lines
+	next if (/^$/); #skip blank lines
 	next if (1 .. /^Net/); #skip lines until column headers
 	chomp;
-	s/@\d+//; #matches on @[0-9]+, or an '@' char with one or more 0-9 chars
+	s/@\d+//; #matches on @[0-9]+, or an '@' char with one or more 0-9 chars, removes them
 	@x=split(' '); # each element of list x is loaded from the line, separated by spaces
-	if ($#x==4) { #if the last element of the list x is 4,
-		$net=shift@x; #return the first element of the list x to store in $net, shorten x by 1 
+	if ($#x==4) { #if x has 4 elements to it
+		$net=shift @x; #return the first element of the list x to store in $net, shorten x by 1 
 	}
 	push @{$nl{$net}},($x[0] . "-" . $x[1]); #nl is a hash with $net as a key to list values, done using references
 }
