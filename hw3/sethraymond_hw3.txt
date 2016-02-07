@@ -1,0 +1,22 @@
+Seth Raymond
+ECE331
+HW3
+
+1.
+2.
+3.
+4.
+5.
+6.
+	a) sudo apt-get update
+	b) WANT_SYMVERS=1
+	c) sudo rpi-update
+	d) sudo shutdown -r now
+	e) cd /usr/src
+	   sudo git init
+	   sudo git clone https://github.com/raspberrypi/linux.git
+	f) sudo mv linux/ linux.4.1.17
+	g) make mrproper
+	   
+	h)
+	i)
