@@ -1,0 +1,10 @@
+#!/usr/bin/perl
+
+open(IN,"out");
+
+while (<IN>) {
+	print $1 if /([0-9a-f]){1,8}/;
+	print "\n";
+}
+
+close(IN);

@@ -15,8 +15,12 @@ HW3
 	e) cd /usr/src
 	   sudo git init
 	   sudo git clone https://github.com/raspberrypi/linux.git
-	f) sudo mv linux/ linux.4.1.17
-	g) make mrproper
-	   
+	f) sudo mv linux/ linux-4.1.17
+	g) cd linux-4.1.17
+	   make mrproper
+	   sudo modprobe configs
+	   sudo bash
+	   gunzip -c /proc/config.gz > .config
+	   exit
 	h)
 	i)
