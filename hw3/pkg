@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+@out=`dpkg-query -W -f='\${Package}\t\${Depends}\n'`;
+
+# dependency => pkg => dependency_version
+
+foreach (@out) {
+	@x = split(' ',$_,2);
+	@depend = split(', ',$x[1]);
+	foreach $k (@depend) {
+		($key,$v) = split(' ',$k,2);
+		${$lookup{$key}}{$x[0]} = $v; # a hash whose values are a reference to a hash
+#		$outer{$key}->{$x[0]} = $v; # same as line above, makes anon hash
+	}
+}
+
+foreach $dep (sort(keys(%lookup))) { # get dependencies to print
+	print "\n$dep required by: \n \t";
+	for $pkg (keys %{$lookup{$dep}}) { #get package names to print
+		print "$pkg ";
+		if ($lookup{$dep}{$pkg}) { #all just formatting nicely
+			print "version $lookup{$dep}{$pkg}\n\t"; #print ver if avail
+		}
+		else {
+			print "\n\t";
+		}
+	}
+}

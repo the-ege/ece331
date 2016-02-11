@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+$,="\n";
+
+sub getPkg {
+	for $pkg (keys @_[0]->{@_[1]}) {
+		push(@ret, $pkg); #first element holds package with dependency
+		push(@ret, @_[0]->{@_[1]}{$pkg}); #holds version num of dep
+	}
+
+	return \@ret;
+}
+
+@out=`dpkg-query -W -f='\${Package}\t\${Depends}\n'`;
+
+# dependency => pkg => dependency_version
+
+foreach (@out) {
+	@x = split(' ',$_,2);
+	@depend = split(', ',$x[1]);
+	foreach $k (@depend) {
+		($key,$v) = split(' ',$k,2);
+		${$lookup{$key}}{$x[0]} = $v; # a hash whose values are a reference to a hash
+#		$outer{$key}->{$x[0]} = $v; # same as line above, makes anon hash
+	}
+}
+
+$dep = "libc6";
+
+print @{&getPkg(\%lookup,$dep)};

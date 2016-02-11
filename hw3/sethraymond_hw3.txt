@@ -3,18 +3,136 @@ ECE331
 HW3
 
 1.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int **setup(int m, int n);
+
+int main(int argc, char *argv[])
+{
+
+	/* Check for correct number of args */
+	if (argc !=  3) {
+		printf("Usage: %s int int\n",argv[0]);
+		return 1;
+	}
+
+	int m = atoi(argv[1]), n = atoi(argv[2]), i;
+	int **arr = setup(m,n);
+	
+	/* Freeing memory before exiting */
+
+	for (i=0;i<m;i++) {
+		free(arr[i]);
+		printf("Slot %d freed\n", i);
+	}
+	free(arr);
+	printf("All memory freed\n");
+
+	return 0;
+}
+
+int **setup(int m, int n)
+{
+	int i;
+	int **x;
+	x = (int **)malloc(m*sizeof(int *));
+	if (x == NULL) {
+		perror("malloc");
+		exit(1);
+	}
+	for (i=0;i<m;i++) {
+		x[i] = (int *)malloc(n*sizeof(int));
+		if (x[i] == NULL) {
+			perror("malloc 2");
+			while (i--) {
+				free(x[i]);
+				printf("Error: MemSlot %d freed\n",i);
+			}
+			free(x);
+			printf("Error: All memory freed\n");
+			exit(2);
+		}
+	}
+
+	return x;
+}
+
 2.
-3.
+
+#!/usr/bin/perl
+
+@out=`dpkg-query -W -f='\${Package}\t\${Depends}\n'`;
+
+# dependency => pkg => dependency_version
+
+foreach (@out) {
+	@x = split(' ',$_,2);
+	@depend = split(', ',$x[1]);
+	foreach $k (@depend) {
+		($key,$v) = split(' ',$k,2);
+		${$lookup{$key}}{$x[0]} = $v; # a hash whose values are a reference to a hash
+#		$outer{$key}->{$x[0]} = $v; # same as line above, makes anon hash
+	}
+}
+
+foreach $dep (sort(keys(%lookup))) { # get dependencies to print
+	print "\n$dep required by: \n \t";
+	for $pkg (keys %{$lookup{$dep}}) { #get package names to print
+		print "$pkg ";
+		if ($lookup{$dep}{$pkg}) { #all just formatting nicely
+			print "version $lookup{$dep}{$pkg}\n\t"; #print ver if avail
+		}
+		else {
+			print "\n\t";
+		}
+	}
+}
+
+3. /0[xX][0-9a-fA-F]+/
 4.
-5.
+
+#!/usr/bin/perl
+
+$,="\n";
+
+sub getPkg {
+	for $pkg (keys @_[0]->{@_[1]}) {
+		push(@ret, $pkg); #first element holds package with dependency
+		push(@ret, @_[0]->{@_[1]}{$pkg}); #holds version num of dep
+	}
+
+	return \@ret;
+}
+
+@out=`dpkg-query -W -f='\${Package}\t\${Depends}\n'`;
+
+# dependency => pkg => dependency_version
+
+foreach (@out) {
+	@x = split(' ',$_,2);
+	@depend = split(', ',$x[1]);
+	foreach $k (@depend) {
+		($key,$v) = split(' ',$k,2);
+		${$lookup{$key}}{$x[0]} = $v; # a hash whose values are a reference to a hash
+#		$outer{$key}->{$x[0]} = $v; # same as line above, makes anon hash
+	}
+}
+
+$dep = "libc6";
+
+print @{&getPkg(\%lookup,$dep)};
+
+5. [0-9]{4}\.[0-9]{2}[NESW]
 6.
 	a) sudo apt-get update
-	b) WANT_SYMVERS=1
+	b) export WANT_SYMVERS=1
 	c) sudo rpi-update
 	d) sudo shutdown -r now
 	e) cd /usr/src
 	   sudo git init
-	   sudo git clone https://github.com/raspberrypi/linux.git
+	   sudo git clone --depth=1  https://github.com/raspberrypi/linux.git
 	f) sudo mv linux/ linux-4.1.17
 	g) cd linux-4.1.17
 	   make mrproper
@@ -22,5 +140,9 @@ HW3
 	   sudo bash
 	   gunzip -c /proc/config.gz > .config
 	   exit
-	h)
-	i)
+	   sudo ln -s /boot/Module7.symvers Module.symvers
+	   sudo chown -R seth .
+	   make modules_prepare
+	h) cd /lib/modules/4.1.17-v7+/
+	   sudo ln -s /usr/src/linux-4.1.17/ build
+	i) sudo ln -s /usr/src/linux-4.1.17/build source

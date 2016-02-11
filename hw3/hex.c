@@ -3,13 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2) {
-		printf("Usage: %s int\n", argv[0]);
-		return -1;
-	}
-
-	int i = atol(argv[1]), j;
-	for (j=0;j<i;j++) printf("%x\n",j);
-
+	double l = 0xdEaDbEeFcAfE;
+	int i = 0x42, j = 42, k = 0xdeadbeef;
 	return 0;
 }

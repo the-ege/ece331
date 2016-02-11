@@ -1,10 +1,11 @@
 #!/usr/bin/perl
 
-open(IN,"out");
+open(IN,"hex.c");
 
 while (<IN>) {
-	print $1 if /([0-9a-f]){1,8}/;
-	print "\n";
+	chomp;
+	next if (/^$/);
+	print "$1\n" if /(0[xX][0-9a-fA-F]+)/g;
 }
 
 close(IN);
