@@ -1,0 +1,14 @@
+#!/usr/bin/perl
+
+open($out,'>','out') or die "Cannot open output file\n";
+
+foreach (@ARGV) {
+	@char = split(' ');
+	foreach $k (@char) {
+		print $out pack("H*",$k);
+	}
+}
+
+print $out "\n";
+
+close($out);
