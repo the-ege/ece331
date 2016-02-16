@@ -1,5 +1,5 @@
-#ifndef _ENCODER
-#define _ENCODER
+#ifndef ENCODER
+#define ENCODER
 
 void encode(char *str);
 
