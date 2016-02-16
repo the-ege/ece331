@@ -1,6 +1,6 @@
 #ifndef _ENCODER
 #define _ENCODER
 
-char* encode(int binVal);
+void encode(char *str);
 
 #endif
