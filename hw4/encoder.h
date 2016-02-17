@@ -1,6 +1,6 @@
 #ifndef ENCODER
 #define ENCODER
 
-void encode(char *str);
+int encode(char *str, int len);
 
 #endif
