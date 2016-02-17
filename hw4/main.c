@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 		/* open() apparently returns -1 on fail... */
 		if (open(argv[2],fd,"O_RDONLY") != -1){
 			printf("reading...\n");
-			len = read(fd,buffer,4096);
+			len = read(fd,buffer,sizeof(buffer));
 			printf("finished reading\n");
 		}
 		else { //error check on open()
