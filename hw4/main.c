@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include "encoder.h"
 
+#define BUFFSIZE 4096
+
 int main(int argc, char *argv[])
 {
 
@@ -13,34 +15,39 @@ int main(int argc, char *argv[])
 	int len;
 	char *buffer;
 
-	buffer = malloc(4096);
-
-	if (argc == 3 && !strcmp("-f",argv[1])) {
-		/* read from file passed as cmd line arg   */
-		/* open() apparently returns -1 on fail... */
-		if (open(argv[2],fd,"O_RDONLY") != -1){
-			printf("reading...\n");
-			len = read(fd,buffer,sizeof(buffer));
-			printf("finished reading\n");
-		}
-		else { //error check on open()
-			perror("open:");
-			return 1;
-		}
-		if (len == 0) { //error check on read()
-			perror("read:");
-			return 1;
-		}
-		else encode(buffer,len);
-		close(fd);
-	}
-	else if (argc == 2) encode(argv[1],strlen(argv[1])); //passed string on cmd line
-	else { //incorrect usage
+	if ((argc > 3) || (argc == 1)) {
 		printf("Usage: %s -f filename OR %s string\n", argv[0], argv[0]);
 		return 1;
 	}
-
-	free(buffer);
+	
+	/* read from file passed as cmd line arg   */
+	if ((argc == 3) && (strcmp("-f",argv[1])==0)) {
+		buffer = (char *)malloc(BUFFSIZE);
+		if (buffer == NULL) {
+			perror("malloc: ");
+			return 2;
+		}
+		fd = open(argv[2],O_RDONLY);
+		if (fd < 0) {
+			perror("open:");
+			free(buffer);
+			buffer = NULL;
+			return 1;
+		}
+		len = read(fd,buffer,BUFFSIZE);
+		close(fd);
+	} else if (argc == 2) { //Read from cmd line
+		buffer = argv[1];
+		len = strlen(argv[1]);
+	} else { //handles if flag is not -f
+		printf("Usage: %s -f filename OR %s string\n", argv[0], argv[0]);
+		return 1;
+	}
+	encode(buffer,len);
+	if (argc == 3) {
+		free(buffer);
+	}
+	buffer = NULL;
 
 	return 0;
 }
