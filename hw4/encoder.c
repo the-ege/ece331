@@ -17,19 +17,18 @@ int encode(char *str, int len)
 		for (j=0;j<8;j++) { //always dealing with 1B of data at a time
 			num = str[i] & (0x01 << j);
 			if (num != 0) { //the value is "1"
-				printf(" 1");
+				printf("%c ", state? 'S' : 'M');
 				stuffCount++;
 
 				if (stuffCount == 5) { //see if we need to stuff a 0
-					printf(" 0");
+					printf("%c ", state? 'S' : 'M');
 					bitCount++; //we've printed another bit
 					state = !state;
 					stuffCount = 0;
 				}
 
-			}
-			else { //the value is 0
-				printf(" 0");
+			} else { //the value is 0
+				printf("%c ", state? 'S' : 'M');
 				stuffCount = 0;
 				state = !state;
 			}
@@ -45,7 +44,7 @@ int encode(char *str, int len)
 		
 
 	}
-	printf("\n");
+	printf("%c\n", state? 'S' : 'M');
 
 	return 0;
 
