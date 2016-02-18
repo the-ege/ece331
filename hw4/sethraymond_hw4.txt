@@ -1,0 +1,8 @@
+Seth Raymond
+ECE331
+HW4
+
+1. /[+-]((\d+\.) | (\d+\.\d+))[eE]
+2. Submitted on Gitlab. Testing included checking "AC_D" and "__" to check bitstuffing.
+3. Submitted on Gitlab. Tested on multiple lines, and many different characters.
+4. Submitted on Gitlab. Tested and confirms compiling, as well as "make clean" command.

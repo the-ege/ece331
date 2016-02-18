@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+
+use Text::CSV
+
+my $csv = Text::CSV->new({binary=>1}) or die "Cannot use CSV\n";
+open(my $fh, "<:encoding(utf8",$ARGV[0]) or die "ARGV[0] $!\n";
+
+while ( my $row = $csv->getline( $fh ) ) {
+	last if (1 .. $row->[0]=~/TIME/);
+	print $row->[0] . "\n";
+}
+
+close $fh;
