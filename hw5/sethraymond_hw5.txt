@@ -1,0 +1,10 @@
+Seth Raymond
+ECE331
+HW4
+
+1. Submitted on Gitlab. Testing included checking "AC_D" and "__" to check bitstuffing.
+2. 
+3.
+	a) chmod 511 voldemort
+	b) chmod u-r,g+w-x,o+w voldemort
+4. Submitted on Gitlab. Tested and confirms compiling, as well as "make clean" command.

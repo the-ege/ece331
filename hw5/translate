@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+
+open(IN,'<',$ARGV[0]) or die "Cannot open input file\n";
+open(OUT,'>',$ARGV[1]) or die "Cannot open output file\n";
+
+while (<IN>) {
+	@char = split(' ');
+	foreach $k (@char) {
+		print OUT pack("H*",$k);
+	}
+}
+
+print OUT "\n";
+
+close(IN);
+close(OUT);
