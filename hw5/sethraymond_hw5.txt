@@ -7,4 +7,10 @@ HW4
 3.
 	a) chmod 511 voldemort
 	b) chmod u-r,g+w-x,o+w voldemort
-4. Submitted on Gitlab. Tested and confirms compiling, as well as "make clean" command.
+4. sudo apt-get update
+   sudo apt-get upgrade
+7.
+	a) dd if=/dev/zero of=zeros bs=31744 count=1
+	b) mkfs -t ext3 zeros
+	c) mount -t zeros /mnt
+	d) cp . /mnt

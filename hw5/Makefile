@@ -1,5 +1,5 @@
-TARGET=encoder
-OBJS=main.o encoder.o
+TARGET=crc
+OBJS=main.o crc.o
 CFLAGS=-g -Wall
 LIBS=-lm
 

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "encoder.h"
+#include "crc.h"
 
 #define BUFFSIZE 4096
 
@@ -13,16 +13,15 @@ int main(int argc, char *argv[])
 
 	int fd;
 	int len;
-	int stuffFlag;
 	char *buffer;
 
-	if ((argc > 4) || (argc == 1)) {
-		printf("Usage: %s -f filename stuffing_enable OR %s string stuffing_enable\n", argv[0], argv[0]);
+	if ((argc > 3) || (argc == 1)) {
+		printf("Usage: %s -f filename OR %s string\n", argv[0], argv[0]);
 		return 1;
 	}
 	
 	/* read from file passed as cmd line arg */
-	if ((argc == 4) && (strcmp("-f",argv[1]) == 0)) {
+	if ((argc == 3) && (strcmp("-f",argv[1]) == 0)) {
 		buffer = (char *)malloc(BUFFSIZE);
 		if (buffer == NULL) {
 			perror("malloc: ");
@@ -36,17 +35,15 @@ int main(int argc, char *argv[])
 			return 3;
 		}
 		len = read(fd,buffer,BUFFSIZE);
-		stuffFlag = atoi(argv[3]);
 		close(fd);
-	} else if (argc == 3) { //Read from cmd line
+	} else if (argc == 2) { //Read from cmd line
 		buffer = argv[1];
 		len = strlen(argv[1]);
-		stuffFlag = atoi(argv[2]);
 	} else { //handles if flag is not -f
-		printf("Usage: %s -f filename stuffing_enable OR %s string stuffing_enable\n", argv[0], argv[0]);
+		printf("Usage: %s -f filename OR %s string\n", argv[0], argv[0]);
 		return 4;
 	}
-	encode(buffer,len,stuffFlag);
+	printf("%.4x\n",calcCRC(buffer,len));
 	if (argc == 4) {
 		free(buffer);
 	}
