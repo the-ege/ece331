@@ -2,15 +2,69 @@ Seth Raymond
 ECE331
 HW4
 
-1. Submitted on Gitlab. Testing included checking "AC_D" and "__" to check bitstuffing.
-2. 
+1. Submitted on Gitlab (new bell202 repository). Testing included checking "AC_D" and "__" to check bitstuffing.
+2. Code is on GitLab repository crc. Testing was done on 123456789 and "the quick brown fox jumpes of the lazy dog."
+   The resulting outputs matched those found on the website.
 3.
-	a) chmod 511 voldemort
-	b) chmod u-r,g+w-x,o+w voldemort
-4. sudo apt-get update
-   sudo apt-get upgrade
+	a) $ chmod 511 voldemort
+	b) $ chmod u-r,g+w-x,o+w voldemort
+4. 
+
+$ sudo apt-get update
+$ sudo apt-get upgrade
+
+5.  
+
+$ sudo rm -r /usr/src/linux-4.1.17/
+$ sudo apt-get update
+$ export WANT_SYMVERS=1
+$ sudo rpi-update
+$ sudo shutdown -r now
+$ cd /usr/src
+$ sudo git init
+$ sudo git clone --depth=1  https://github.com/raspberrypi/linux.git
+$ sudo mv linux/ linux-4.1.17
+$ cd linux-4.1.17
+$ make mrproper
+$ sudo modprobe configs
+$ sudo bash
+$ gunzip -c /proc/config.gz > .config
+$ exit
+$ sudo ln -s /boot/Module7.symvers Module.symvers
+$ sudo chown -R seth .
+$ make modules_prepare
+$ cd /lib/modules/4.1.17-v7+/
+$ sudo ln -s /usr/src/linux-4.1.17/ build
+$ sudo ln -s /usr/src/linux-4.1.17/build source
+
+6. $ find / -type d -user seth | wc -l
 7.
-	a) dd if=/dev/zero of=zeros bs=31744 count=1
-	b) mkfs -t ext3 zeros
-	c) mount -t zeros /mnt
-	d) cp . /mnt
+	a) $ dd if=/dev/zero of=zeros bs=32M count=1
+	b) $ mkfs -t ext3 zeros
+	c) $ mount -o loop zeros /mnt #Chris and I tested this, apparently the -o loop isn't required any more
+	d) $ cp -a . /mnt
+8. 
+
+$ touch test
+$ ln test testln
+$ stat -c '%i' test testln
+# The inode numbers for both are the same (47678909), therefore the link testln is a hard link.
+$ rm testln
+$ ln -s test testln
+$ stat -c '%i' test testln
+# The inode numbers are different for each (47678909 versus 47678916),
+# therefore the link is a symbolic link.
+$ rm testln
+$ ln -s ../ testln #hard links to directories not allowed
+$ stat -c '%i' ../ testln
+# The inode numbers for both are different (47414771 versus 47678916). Cannot hard link to a
+# directory because a directory is a list of inodes, whereas a hard link is a singular inode.
+$ dd if=/dev/zero of=zeros bs=32M count=1
+$ mkfs -t ext3 zeros
+$ mount -o loop zeros /mnt
+$ cp . /mnt
+$ ln -s /mnt/test testln #hard links to files across filesystems not allowed
+$ stat -c '%i' /mtn/test testln
+# The inode numbers are different (18 versus 47678919). Cannot hard link to a file across a
+# different filesystem because the inode numbers all start from 1 on each filesystem. Hard links
+# have the same inode numbers as the file they link to, so a hard link would not work correctly.
