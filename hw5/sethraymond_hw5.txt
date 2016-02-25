@@ -15,7 +15,7 @@ $ sudo apt-get upgrade
 
 5.  
 
-$ sudo rm -r /usr/src/linux-4.1.17/
+$ yes | sudo rm -r /usr/src/linux-4.1.17/
 $ sudo apt-get update
 $ export WANT_SYMVERS=1
 $ sudo rpi-update
