@@ -5,3 +5,58 @@ HW6
 1.
 2.
 3.
+C code:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <time.h>
+#include <sys/types.h>
+
+int main(void)
+{
+	pid_t pid;
+
+	pid = fork(); //pid holds the value of the child process
+	if (pid < 0) { //fail on fork
+		perror("fail on fork: ");
+		return 1;
+	} else if (pid == 0) { //the child running the code thinks it has pid 0
+		while(1) {
+			sleep(1); //sleep for one second
+		}
+	} else { //parent process
+		kill(pid,SIGKILL);
+		sleep(10);	
+	}
+
+	return 0;
+}
+
+Makefile:
+
+TARGET=zombie
+OBJS=zombie.o
+CFLAGS=-g -Wall
+LIBS=-lm
+
+.PHONY: all clean
+
+all: ${TARGET}
+${TARGET}: ${OBJS}
+	${CC} -o ${TARGET} ${OBJS} ${LIBS}
+clean:
+	rm -f ${TARGET} ${OBJS}
+
+Terminal command:
+$ ps agx | grep "[z]ombie"
+
+# Output: 
+# 2964 pts/1    S+     0:00 ./zombie
+# 2965 pts/1    Z+     0:00 [zombie] <defunct>
+
+# The quoting and square brackets remove the call to grep from ps.
+# This works because grep is looking for regular expression starting
+# with 'z' and ending with 'ombie.' This filters the grep command
+# out of the search of ps.
