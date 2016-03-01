@@ -47,6 +47,7 @@ int main (int argc, char *argv[])
 
 		if (status != 0) {
 			printf("Stat returns an error!\n");
+			globfree(&glob_struct);
 			return -5;
 		}
 

@@ -6,14 +6,15 @@ int **setup(int m, int n);
 int main(int argc, char *argv[])
 {
 
-	/* Check for correct number of args */
-	if (argc !=  3) {
+	int m, n, i;
+	if (argc == 3) { /* Check for correct number of args */
+		m = atoi(argv[1]);
+		n = atoi(argv[2]);
+		int **arr = setup(m,n);
+	} else {
 		printf("Usage: %s int int\n",argv[0]);
 		return 1;
 	}
-
-	int m = atoi(argv[1]), n = atoi(argv[2]), i;
-	int **arr = setup(m,n);
 	
 	/* Freeing memory before exiting */
 

@@ -103,7 +103,7 @@ int main (int argc, char *argv[])
 
 	a) Will match any single digit with or without a leading zero as long as there is a hyphen in front (ex, -1 and -01 both match).
 	Also matches on any two digit integer from 10 to 42.
-	b) Will match on a set of four of any !@#$%^&* symbols, a space, and any multiple of four (excluding zero) of the !@#$%^&* symbols.
+	b) Matches comic-style curse words.
 7.
 
 #!/usr/bin/perl

@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+
+while(<IN>) {
+	@x=split(' ');
+	$x[0]=~s/-/ /; #replaces - with ' '
+	$x[1]=~s/:/ /; #replaces : with ' '

@@ -10,7 +10,7 @@
 
 int main(void)
 {
-	size_t i = 0;
+	size_t i = 1;
 	void *ptr;
 
 	while (1) {
@@ -18,8 +18,7 @@ int main(void)
 		if (ptr != NULL) free(ptr); /* Frees only if allocation is successful */
 		else return 0;
 		printf("Allocated %d bytes\n", i);
-		if (i == 0) i = 2; /* Because just doing a multiply by 2 when i is 0 keeps it at 0... */
-		else i *= 2;
+		i *= 2;
 
 	}
 }
