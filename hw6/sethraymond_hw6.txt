@@ -3,8 +3,12 @@ ECE331
 HW6
 
 1.
-2.
+2. 
+	a) $ sudo insmod hello.ko
+	b) $ dmesg | tail
+
 3.
+
 C code:
 
 #include <stdio.h>
