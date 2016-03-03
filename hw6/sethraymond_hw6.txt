@@ -2,10 +2,56 @@ Seth Raymond
 ECE331
 HW6
 
-1.
+1. Code has been written and is posted to Gitlab. The output has been tested using hexdump -C
+and comparisons with other students. Tested values included callname of "NJ7P  ", as given in the
+AX25.2.2 standard (disregarding the typo in the standard). Various values for the INFO block
+were passed, including values of "string" and "stuff" and "information goes here" to give 
+various crc ouputs.
+
+The output for callname "NJ7P  " and INFO "information goes here" is as follows (in hex):
+
+$ ./ax25 "NJ7P  " "information goes here" > file && hexdump -C file
+
+00000000  82 a0 b4 aa 9a 8a 60 9c  94 6e a0 40 40 76 ae 92  |......`..n.@@v..|
+00000010  88 8a 64 40 63 03 f0 69  6e 66 6f 72 6d 61 74 69  |..d@c..informati|
+00000020  6f 6e 20 67 6f 65 73 20  68 65 72 65 3b 54        |on goes here;T|
+0000002e
+
 2. 
 	a) $ sudo insmod hello.ko
-	b) $ dmesg | tail
+	b) $ dmesg | tail | grep "Hello"
+	   # or
+	   $ lsmod | grep "hello"
+	c) sudo rmmod hello
+	d)
+
+		obj-m += hello.o
+		KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+		default:
+			$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+		clean:
+			$(MAKE) -C $(KERNELDIR) M=$(PWD) clean
+
+	e)
+
+		#include <linux/init.h>
+		#include <linux/module.h>
+		MODULE_LICENSE("Dual BSD/GPL");
+
+		static int hello_init(void)
+		{
+			printk(KERN_ALERT "Hello, world\n");
+			return 0;
+		}
+
+		static void hello_exit(void)
+		{	
+			printk(KERN_ALERT "Goodbye, cruel world\n");
+			return;
+		}
+
+		module_init(hello_init);
+		module_exit(hello_exit);
 
 3.
 
