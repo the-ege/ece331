@@ -19,10 +19,10 @@ $ ./ax25 "NJ7P  " "information goes here" > file && hexdump -C file
 
 2. 
 	a) $ sudo insmod hello.ko
-	b) $ dmesg | tail | grep "Hello"
+	b) $ dmesg | tail | grep "Hello" #gives: [104739.874891] Hello, world
 	   # or
-	   $ lsmod | grep "hello"
-	c) sudo rmmod hello
+	   $ lsmod | grep "hello" # gives: hello                    741  0 
+	c) sudo rmmod hello #looking at dmesg says: [104866.546250] Goodbye, cruel world 
 	d)
 
 		obj-m += hello.o
