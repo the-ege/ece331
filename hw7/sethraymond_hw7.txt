@@ -1,0 +1,65 @@
+Seth Raymond
+ECE331
+HW7
+
+1. 
+
+	# assuming that gfortran is installed, because apparently f77 isn't installed by default,
+	# which is the default fortran compiler make uses.
+	# Installed using
+	# $ sudo apt-get install gfortran
+
+	TARGET=band
+	OBJS=rem.o u2.o ccr.o kiss.o
+	CFLAGS=-g -Wall
+
+	.PHONY: all clean
+
+	all: ${TARGET}
+	${TARGET}: ${OBJS}
+		${CC} -o ${TARGET} ${OBJS} ${LIBS}
+	clean:
+		rm -f ${TARGET} ${OBJS}
+
+2. 
+
+	#!/usr/bin/perl
+	
+	open(IN,"/proc/kallsyms");
+	
+	while (<IN>) {
+	
+		chomp;
+		@addr = split(' ',$_,2);
+		@sym_name = split(' ',$addr[1]);
+		
+		$h{$sym_name[1]} = $addr[0];
+	}
+	
+	foreach $k (keys(%h)) {
+		next unless ($k=~/vector/);
+		print "$h{$k}\n";
+	}
+
+3.
+4.
+5.
+6.
+
+	$ cp /media/.../start_here ~/temp/ # copy the file into an empty directory
+	$ vim start_here # By doing this, I noticed it was an ELF file, which meant it needed to be executed
+	$ chmod +x start_here
+	$ ./start_here
+	$ ll #  alias 'ls -al', output shows two . directories
+	$ vim '.' # notice that there is a '. /' directory... tricky!
+	$ cd '. /'
+	$ ls # there is a single file, files.tar.bz2, extract .bz2 files using bunzip2...
+	$ man bunzip2 # usage: bunzip2 [FILENAME].bz2 => [FILENAME]
+	$ bunzip2 files.tar.bz2
+	$ ls # now have files.tar
+	$ man tar # I need to use tar -x to extract
+	$ tar -xvf files.tar # extract, verbose, and specify file to be files.tar
+	$ ll # again, aliased. Notice there is an executable called 'runme'
+	$ ./runme # Output tells me to give arg1 as student id #, arg2 is a glob expression to match on any string containing a lower-case character
+	$ ./runme 0712939 '*[a-z]*'
+	# Message: Stevens Hall
