@@ -1,0 +1,105 @@
+Seth Raymond
+ECE331
+HW8
+
+1. Network address: 32.32.0.0
+   Broadcast address: 32.63.255.255
+2. 
+3.
+	a. The tutorial chosen was from Tutorials Point, website www.tutorialspoint.com/perl/perl_socket_programming.htm
+	b. Server:
+
+		#!/usr/bin/perl
+
+		use Socket;
+
+		#Using tutorial from www.tutorialspoint.com/perl/perl_socket_programming.htm
+
+		#setup
+		$port = 7890;
+		$proto = getprotobyname('tcp');
+		$server_ip = 127.0.0.1;
+
+		#create socket
+		socket(SOCKET,PF_INET,SOCK_STREAM,$proto) or die "Cannot open socket!\n";
+		setsockopt(SOCKET,SOL_SOCKET,SO_REUSEADDR,1);
+
+		#bind socket to port
+		bind(SOCKET,pack_sockaddr_in($port,$server_ip)) or die "Cannot bind to port $port\n";
+
+		#listen on port
+		listen(SOCKET,5) or die "Listen: $!\n";
+
+		#accept a connection
+
+		while ($client_addr = accept(NEW_SOCKET,SOCKET)) {
+			#give client a message, close connection
+			$name = gethostbyaddr($client_addr,AF_INET);
+			print NEW_SOCKET "The server says hello!\n";
+			print "Connection received from $name\n";
+			close NEW_SOCKET;
+		}
+
+		Client:
+
+		#!/usr/bin/perl
+
+		use Socket;
+	
+		#Using tutorial from www.tutorialspoint.com/perl/perl_socket_programming.htm
+
+		#init host/port
+		$host = 127.0.0.1;
+		$port = 7890;
+		$server = 127.0.0.1;
+		$proto = getprotobyname('tcp');
+
+		#create socket
+		socket(SOCKET,PF_INET,SOCK_STREAM,$proto) or die "Cannot create socket!\n";
+
+		#connect to port
+		connect(SOCKET,pack_sockaddr_in($port,$server)) or die "Can't connect to port $port\n";
+
+		while ($k = <SOCKET>) {
+			print "$k\n";
+		}
+
+		close SOCKET or die "close: $!";
+4.
+5.
+	temp:
+
+	#!/usr/bin/perl
+
+	use Socket;
+
+	#Using tutorial from www.tutorialspoint.com/perl/perl_socket_programming.htm
+
+	#Get temperature in mdegC
+	$temp = `cat /sys/class/thermal/thermal_zone0/temp`;
+	$temp = $temp/1000;
+	
+	#setup
+	$port = 7890;
+	$proto = getprotobyname('tcp');
+	$server_ip = 127.0.0.1;
+
+	#create socket
+	socket(SOCKET,PF_INET,SOCK_STREAM,$proto) or die "Cannot open socket!\n";
+	setsockopt(SOCKET,SOL_SOCKET,SO_REUSEADDR,1);
+
+	#bind socket to port
+	bind(SOCKET,pack_sockaddr_in($port,$server_ip)) or die "Cannot bind to port $port\n";
+
+	#listen on port
+	listen(SOCKET,5) or die "Listen: $!\n";
+
+	#accept a connection
+
+	while ($client_addr = accept(NEW_SOCKET,SOCKET)) {
+		#give client a message, close connection
+		$name = gethostbyaddr($client_addr,AF_INET);
+		print NEW_SOCKET "Current CPU core temp: $temp degC\n";
+		print "Connection received from $name\n";
+		close NEW_SOCKET;
+	}
