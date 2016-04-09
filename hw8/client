@@ -1,0 +1,24 @@
+#!/usr/bin/perl
+
+use Socket;
+
+#Using tutorial from www.tutorialspoint.com/perl/perl_socket_programming.htm
+
+#init host/port
+
+$host = 127.0.0.1;
+$port = 7890;
+$server = 127.0.0.1;
+$proto = getprotobyname('tcp');
+
+#create socket
+socket(SOCKET,PF_INET,SOCK_STREAM,$proto) or die "Cannot create socket!\n";
+
+#connect to port
+connect(SOCKET,pack_sockaddr_in($port,$server)) or die "Can't connect to port $port\n";
+
+while ($k = <SOCKET>) {
+	print "$k\n";
+}
+
+close SOCKET or die "close: $!";

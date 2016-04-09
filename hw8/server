@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use Socket;
+
+#Using tutorial from www.tutorialspoint.com/perl/perl_socket_programming.ht
+
+#setup
+$port = 7890;
+$proto = getprotobyname('tcp');
+$server_ip = 127.0.0.1;
+
+#create socket
+socket(SOCKET,PF_INET,SOCK_STREAM,$proto) or die "Cannot open socket!\n";
+setsockopt(SOCKET,SOL_SOCKET,SO_REUSEADDR,1);
+
+#bind socket to port
+bind(SOCKET,pack_sockaddr_in($port,$server_ip)) or die "Cannot bind to port $port\n";
+
+#listen on port
+listen(SOCKET,5) or die "Listen: $!\n";
+
+#accept a connection
+
+while ($client_addr = accept(NEW_SOCKET,SOCKET)) {
+	#give client a message, close connection
+	$name = gethostbyaddr($client_addr,AF_INET);
+	print NEW_SOCKET "The server says hello!\n";
+	print "Connection received from $name\n";
+	close NEW_SOCKET;
+}

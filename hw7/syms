@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+open(IN,"/proc/kallsyms");
+
+while (<IN>) {
+
+	chomp;
+	@addr = split(' ',$_,2);
+	@sym_name = split(' ',$addr[1]);
+	
+	$h{$sym_name[1]} = $addr[0];
+}
+
+foreach $k (keys(%h)) {
+	next unless ($k=~/vector/);
+	print "$h{$k}\n";
+}
