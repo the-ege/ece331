@@ -7,7 +7,9 @@ HW8
 2. 
 3.
 	a. The tutorial chosen was from Tutorials Point, website www.tutorialspoint.com/perl/perl_socket_programming.htm
-	b. Server:
+	b.
+======================================================================================================
+	Server:
 
 		#!/usr/bin/perl
 
@@ -39,7 +41,7 @@ HW8
 			print "Connection received from $name\n";
 			close NEW_SOCKET;
 		}
-
+======================================================================================================
 		Client:
 
 		#!/usr/bin/perl
@@ -65,8 +67,39 @@ HW8
 		}
 
 		close SOCKET or die "close: $!";
+
+======================================================================================================
+
+	$ ./server &
+	$ ./client
+	Connection received from ANantes-256-1-229-46.w2-0.abo.wanadoo.fr
+	The server says hello!
+
 4.
+======================================================================================================
+	netinfo:
+
+	#!/usr/bin/perl
+
+	@ip = split(/\./,$ARGV[0],4);
+	@netmask = split(/\./,$ARGV[1],4);
+
+	for ($k=0;$k<4;$k++) {
+		$bcast[$k] = $ip[$k] & ($netmask[$k]+0); #convert string to number...
+		$netaddr[$k] = ($ip[$k]+0) | ((~$netmask[$k])&255); #see above, mask off all but bottom 8 bits
+	}
+
+	$bcast = join('.',@bcast);
+	$netaddr = join('.',@netaddr);
+
+	print "BCAST: $bcast\nNETADDR: $netaddr\n";
+======================================================================================================
+	$ ./netinfo 32.56.34.123 255.224.0.0
+	BCAST: 32.32.0.0
+	NETADDR: 32.63.255.255
+
 5.
+======================================================================================================
 	temp:
 
 	#!/usr/bin/perl
@@ -103,3 +136,10 @@ HW8
 		print "Connection received from $name\n";
 		close NEW_SOCKET;
 	}
+======================================================================================================
+	Testing:
+	$ ./temp &
+	$ ./client
+	Connection received from ANantes-256-1-229-46.w2-0.abo.wanadoo.fr
+	Current CPU core temp: 40.084 degC
+

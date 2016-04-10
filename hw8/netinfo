@@ -1,0 +1,14 @@
+#!/usr/bin/perl 
+
+@ip = split(/\./,$ARGV[0],4);
+@netmask = split(/\./,$ARGV[1],4);
+
+for ($k=0;$k<4;$k++) {
+	$bcast[$k] = $ip[$k] & ($netmask[$k]+0); #convert string to number...
+	$netaddr[$k] = ($ip[$k]+0) | ((~$netmask[$k])&255); #see above, mask off all but bottom 8 bits
+}
+
+$bcast = join('.',@bcast);
+$netaddr = join('.',@netaddr);
+
+print "BCAST: $bcast\nNETADDR: $netaddr\n";
