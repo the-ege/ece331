@@ -4,9 +4,6 @@ use Socket;
 
 #Using tutorial from www.tutorialspoint.com/perl/perl_socket_programming.htm
 
-#Get temperature in mdegC
-$temp = `cat /sys/class/thermal/thermal_zone0/temp`;
-$temp = $temp/1000;
 #setup
 $port = 7890;
 $proto = getprotobyname('tcp');
@@ -25,6 +22,9 @@ listen(SOCKET,5) or die "Listen: $!\n";
 #accept a connection
 
 while ($client_addr = accept(NEW_SOCKET,SOCKET)) {
+	#Get temperature in mdegC
+	$temp = `cat /sys/class/thermal/thermal_zone0/temp`;
+	$temp = $temp/1000;
 	#give client a message, close connection
 	$name = gethostbyaddr($client_addr,AF_INET);
 	print NEW_SOCKET "Current CPU core temp: $temp degC\n";
