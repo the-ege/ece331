@@ -4,7 +4,8 @@ HW8
 
 1. Network address: 32.32.0.0
    Broadcast address: 32.63.255.255
-2. 
+2. Number of available addresses: 12*256*256 = 786,432 addresses
+   Number of assignable addresses: (12*256*256)-2 = 786,430 addresses
 3.
 	a. The tutorial chosen was from Tutorials Point, website www.tutorialspoint.com/perl/perl_socket_programming.htm
 	b.
