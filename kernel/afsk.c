@@ -16,88 +16,17 @@
 #include <linux/pinctrl/consumer.h>
 #include <linux/gpio/consumer.h>
 #include <linux/stat.h>
+#include <linux/delay.h>
 
 #define AFSK_NOSTUFF 0
 #define AFSK_STUFF 1
 #define AX25_DELIM 0x7E
 
-//Dynamically change delimiter buffer size
-static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-{
-	//check IOCTL number - /usr/src/linux/Documentation/ioctl/ioctl-numbers.txt?
-	//locking
-	//change buffer size
-	//unlocking
-	return -EINVAL;
-}
-
-//Write system call - data goes to encoder buffer for delimination, bit stuffing,
-//NRZI-ing, and transmission
-static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t count, loff_t *offp)
-{
-	//locking
-	//take care of blocking here
-	//bit stuff
-	int i,j; //loop counters
-	int num; //this value will determine the print
-	int stuffcount = 0; //stuffs a 0 when it reaches 5
-	int bitcount = 0; //we want to print nicely, even when stuffing bits
-	int state = 1; //1->S, 0->M
-	int stuff_flag = 1;
-
-	for (i=0;i<count;i++) {
-		/* Print the binary value LSb first */
-		for (j=0;j<8;j++) { //always dealing with 1B of data at a time
-			num = buff[i] & (0x01 << j);
-			if (num != 0) { //the value is "1"
-				printk(KERN_INFO "%c ", state? 'S' : 'M');
-				stuffcount++;
-
-				if ((stuffcount == 5) && (stuff_flag == 1)) { //see if we need to stuff a 0
-					printk(KERN_INFO "%c ", state? 'S' : 'M');
-					bitcount++; //we've printed another bit
-					state = !state;
-					stuffcount = 0;
-				}
-
-			} else { //the value is 0
-				printk(KERN_INFO "%c ", state? 'S' : 'M');
-				stuffcount = 0;
-				state = !state;
-			}
-
-			bitcount++; //because we've printed a bit
-			if (bitcount == 8) {
-				printk(KERN_INFO "\t"); //print formatting
-				bitcount = 0;
-			}
-
-
-		}
-		
-
-	}
-	printk(KERN_INFO "%c\n", state? 'S' : 'M');
-	//NRZI
-	//pin toggle
-	//unlocking
-	return 0;
-}
-
-//Open syscall
-static int afsk_open(struct inode *inode, struct file *filp)
-{
-
-	if (filp->f_flags & O_RDONLY) return -EINVAL;
-	if (filp->f_flags & O_RDWR) return -EINVAL;
-	return 0; //user specified O_WRONLY
-}
-
-//Close syscall
-static int afsk_release(struct inode *inode, struct file *filp)
-{
-	return 0;
-}
+// Forward declarations
+static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
+static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t count, loff_t *offp);
+static int afsk_open(struct inode *inode, struct file *filp);
+static int afsk_release(struct inode *inode, struct file *filp);
 
 // Forward declaration
 struct afsk_data_t;
@@ -490,3 +419,92 @@ module_platform_driver(afsk_driver);
 MODULE_DESCRIPTION("AFSK pin modulator");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("AFSK");
+
+//Dynamically change delimiter buffer size
+static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	//check IOCTL number - /usr/src/linux/Documentation/ioctl/ioctl-numbers.txt?
+	//locking
+	//change buffer size
+	//unlocking
+	return -EINVAL;
+}
+
+//Write system call - data goes to encoder buffer for delimination, bit stuffing,
+//NRZI-ing, and transmission
+static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t count, loff_t *offp)
+{
+	int i;
+	int j; //loop counters
+	int num; //this value will determine the print
+	int stuffcount = 0; //stuffs a 0 when it reaches 5
+	int bitcount = 0; //we want to print nicely, even when stuffing bits
+	int state = 1; //1->S, 0->M
+	int stuff_flag = 1;
+
+	//locking
+	//take care of blocking here
+	//bit stuff
+
+	gpiod_set_value(afsk_data_fops->ptt,1); //Enable push-to-talk
+	mdelay(5); //delay 5ms
+	gpiod_set_value(afsk_data_fops->enable,1); //Enable the enable pin
+
+	for (i=0;i<count;i++) {
+		/* Print the binary value LSb first */
+		for (j=0;j<8;j++) { //always dealing with 1B of data at a time
+			num = buff[i] & (0x01 << j);
+			if (num != 0) { //the value is "1"
+				gpiod_set_value(afsk_data_fops->m_sb,state);
+				printk(KERN_INFO "%c ", state? 'S' : 'M');
+				stuffcount++;
+				if ((stuffcount == 5) && (stuff_flag == 1)) { //see if we need to stuff a 0
+					gpiod_set_value(afsk_data_fops->m_sb,state);
+					printk(KERN_INFO "%c ", state? 'S' : 'M');
+					bitcount++; //we've printed another bit
+					state = !state;
+					stuffcount = 0;
+				}
+				
+			} else { //the value is 0
+				gpiod_set_value(afsk_data_fops->m_sb,state);
+				printk(KERN_INFO "%c ", state? 'S' : 'M');
+				stuffcount = 0;
+				state = !state;
+			}
+
+			bitcount++; //because we've printed a bit
+			if (bitcount == 8) {
+				printk(KERN_INFO "\t"); //print formatting
+				bitcount = 0;
+			}
+		}
+	}
+
+	gpiod_set_value(afsk_data_fops->m_sb,state);
+	printk(KERN_INFO "%c\n", state? 'S' : 'M');
+	//NRZI
+	//pin toggle
+
+	gpiod_set_value(afsk_data_fops->enable,0); //Disable the enable pin
+	mdelay(5); //delay 5ms
+	gpiod_set_value(afsk_data_fops->ptt,0); //disable push-to-talk pin
+	
+	//unlocking
+	return 0;
+}
+
+//Open syscall
+static int afsk_open(struct inode *inode, struct file *filp)
+{
+
+	if (filp->f_flags & O_RDONLY) return -EINVAL;
+	if (filp->f_flags & O_RDWR) return -EINVAL;
+	return 0; //user specified O_WRONLY
+}
+
+//Close syscall
+static int afsk_release(struct inode *inode, struct file *filp)
+{
+	return 0;
+}
