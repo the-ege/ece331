@@ -17,6 +17,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/stat.h>
 #include <linux/delay.h>
+#include <linux/string.h>
 
 #define AFSK_NOSTUFF 0
 #define AFSK_STUFF 1
@@ -423,11 +424,22 @@ MODULE_DESCRIPTION("AFSK");
 //Dynamically change delimiter buffer size
 static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-	//check IOCTL number - /usr/src/linux/Documentation/ioctl/ioctl-numbers.txt?
+	//check IOCTL number - /usr/src/linux/Documentation/ioctl/ioctl-number.txt?
+	if (cmd != 0x70) {
+		return -EINVAL; //maybe a better error number?
+	}
 	//locking
 	//change buffer size
+	if (afsk_data_fops->delim_buf != NULL) { //previously allocated
+		kfree(afsk_data_fops->delim_buf);
+	}
+	afsk_data_fops->delim_buf = kmalloc(arg,GFP_ATOMIC); //arg number of bytes to allocate
+	//GFP_ATOMIC - flag to tell the kernel not to sleep in kmalloc()
+	memset(afsk_data_fops->delim_buf,0x7E,arg);
+	afsk_data_fops->delim_cnt = arg;
 	//unlocking
-	return -EINVAL;
+		
+	return 0;
 }
 
 //Write system call - data goes to encoder buffer for delimination, bit stuffing,

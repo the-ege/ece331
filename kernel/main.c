@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
 	char *data_out;				//data to be written
 	int size;					//size of the ax25 frame
 	
+	
 	/* Error check cmd line args */
 	if (argc != 3) {
 		fputs("Usage: ./ax25 callsign transmit_data\n",stderr);
@@ -34,14 +35,12 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
-	fd = open("/dev/afsk",O_RDWR);
+	fd = open("/dev/afsk",O_WRONLY);
 	/* Error check file open call */
 	if (fd == 0) {
 		fputs("Cannot open the afsk device!\n",stderr);
 		return 1;
 	}
-
-	status = ioctl(fd,size); 
 
 	write(fd,buffer,size);
 
