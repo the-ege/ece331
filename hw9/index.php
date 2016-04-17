@@ -11,27 +11,24 @@ if (array_key_exists("year",$_POST)) {
 }
 
 function mkcal($year) {
+	#Get current date
 	$today=new DateTime('now');
-	$ny=$today->format('Y');
+	$curday=$today->format('j');
+	$curmon=$today->format('m');
+	$curyear=$today->format('Y');
 	
 	#Get start of year
-	$k=new DateTime('first day of January' . date('Y'));
+	$k=new DateTime();
+	$k->setDate($year,1,1);
 	$sdom=$k->format('j'); #starting dom
 	$smonth=$today->format('F'); #text of starting month
 	
-	if ($ny>$year) {
-		$x=$ny-$year;
-		$today->sub(new DateInterval('P' . $x . 'Y'));
-	} else {
-		$x=$year-$ny;
-		$today->add(new DateInterval('P' . $x . 'Y'));
-	}
 	for ($i=1;$i<13;$i++) {
 		$dom=$k->format('j'); #dom w/o leading zeros
 		$month=$k->format('F'); #text of month
 		$year=$k->format('Y'); #4 digit year
 		$k->sub(new DateInterval('P' . $dom . 'D'));
-		$wd=$k->format('w'); #gets weekday?
+		$wd=$k->format('w'); #gets weekday
 		$k->sub(new DateInterval('P' . $wd . 'D'));
 		print "<TABLE Border=1>";
 		print "<TR><TH COLSPAN=7>$month $year</TR>";
@@ -42,7 +39,7 @@ function mkcal($year) {
 			}
 			$cdom=$k->format('j');
 			$checkdom=$today->format('j');
-			if ($dom==$checkdom) {
+			if (($dom==$curday) && ($month==$curmonth) && ($year==$curyear)) {
 				print "<TD ALIGN='CENTER' BGCOLOR='LightGreen'>$cdom";
 			} else if ($j<7 && $cdom>7) { #make bg for previous month days, no bg if month starts on Sun
 				print "<TD ALIGN='CENTER' BGCOLOR='Gray'>$cdom";
