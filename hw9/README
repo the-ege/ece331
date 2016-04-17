@@ -1,0 +1,36 @@
+Steps to get the webserver running:
+
+$ sudo apt-get install lighttpd php5 php5-cgi php5-sqlite php5-gd
+$ sudo systemctl disable apache
+$ sudo lighty-enable-mod fastcgi
+$ sudo lightly-enable-mod fastcgi-php
+$ sudo systemctl restart lighttpd
+
+At this point, if you browse to localhost, you'll see the default lighttpd page.
+You can put a .php file in your default webserver directory:
+
+$ sudo vim /var/www/html/info.php
+
+In this file, just write <?php phpinfo(); ?>
+
+$ sudo chmod 644 info.php
+
+Browse to localhost/info.php and you should get the phpinfo page.
+
+If you want to be really cool, then do:
+
+$ sudo lighty-enable-mod userdir
+$ sudo systemctl restart lighttpd
+
+In your home directory (~), you can make a public_html/ folder so you don't have to be in a root-owned directory.
+Now you can do this:
+
+$ vim ~/public_html/info.php
+
+Do the same thing as above: <?php phpinfo(); ?>
+
+Now browse to localhost/~<USERNAME> and you should get the same page.
+
+This also works if you make a symbolic link to a different directory, so if you keep all your code from
+class in one folder and you don't want to copy back and forth, just make a symbolic link to your folder
+and call the link public_html. It doesn't know the difference and works just fine.
