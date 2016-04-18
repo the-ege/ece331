@@ -88,6 +88,7 @@ static int afsk_probe(struct platform_device *pdev)
 
 	const char *pin_name;	// Pin name
 
+
 	// Allocate device driver data and save
 	afsk_dat=kmalloc(sizeof(struct afsk_data_t),GFP_ATOMIC);
 	if (afsk_dat==NULL) {
@@ -247,7 +248,6 @@ static int afsk_probe(struct platform_device *pdev)
 	if (dn_enable) of_node_put(dn_enable);
 	if (dn) of_node_put(dn);
 
-#if 0
 	// Create the device - automagically assign a major number
 	afsk_dat->major=register_chrdev(0,"afsk",&afsk_fops);
 	if (afsk_dat->major<0) {
@@ -255,7 +255,6 @@ static int afsk_probe(struct platform_device *pdev)
 		ret=afsk_dat->major;
 		goto fail;
 	}
-#endif
 
 	// Create a class instance
 	afsk_dat->afsk_class=class_create(THIS_MODULE, "afsk_class");
@@ -328,6 +327,9 @@ static int afsk_probe(struct platform_device *pdev)
 	// Set the delim buffer values
 	memset(afsk_dat->delim_buf,AX25_DELIM,afsk_dat->delim_cnt);
 
+	// Register the device
+	register_chrdev(afsk_dat->major,"afsk",&afsk_fops);
+
 	printk(KERN_INFO "Registered\n");
 	dev_info(dev, "Initialized");
 	return 0;
@@ -390,6 +392,7 @@ static int afsk_remove(struct platform_device *pdev)
 
 	// Free the device driver data
 	dev_set_drvdata(dev,NULL);
+
 	kfree(afsk_dat);
 
 	printk(KERN_INFO "Removed\n");
@@ -429,6 +432,7 @@ static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return -EINVAL; //maybe a better error number?
 	}
 	//locking
+	atomic_set(&(filp->f_pos_lock.count),0); //0 = locked
 	//change buffer size
 	if (afsk_data_fops->delim_buf != NULL) { //previously allocated
 		kfree(afsk_data_fops->delim_buf);
@@ -438,6 +442,7 @@ static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	memset(afsk_data_fops->delim_buf,0x7E,arg);
 	afsk_data_fops->delim_cnt = arg;
 	//unlocking
+	atomic_set(&(filp->f_pos_lock.count),1); //1 = unlocked
 		
 	return 0;
 }
@@ -455,6 +460,7 @@ static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t cou
 	int stuff_flag = 1;
 
 	//locking
+	atomic_set(&(filp->f_pos_lock.count),0); //0 = locked
 	//take care of blocking here
 	//bit stuff
 
@@ -503,6 +509,8 @@ static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t cou
 	gpiod_set_value(afsk_data_fops->ptt,0); //disable push-to-talk pin
 	
 	//unlocking
+	atomic_set(&(filp->f_pos_lock.count),1); //1 = unlocked
+
 	return 0;
 }
 
