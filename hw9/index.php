@@ -14,14 +14,12 @@ function mkcal($year) {
 	#Get current date
 	$today=new DateTime('now');
 	$curday=$today->format('j');
-	$curmon=$today->format('m');
+	$curmon=$today->format('F');
 	$curyear=$today->format('Y');
 	
 	#Get start of year
 	$k=new DateTime();
 	$k->setDate($year,1,1);
-	$sdom=$k->format('j'); #starting dom
-	$smonth=$today->format('F'); #text of starting month
 	
 	for ($i=1;$i<13;$i++) {
 		$dom=$k->format('j'); #dom w/o leading zeros
@@ -30,16 +28,16 @@ function mkcal($year) {
 		$k->sub(new DateInterval('P' . $dom . 'D'));
 		$wd=$k->format('w'); #gets weekday
 		$k->sub(new DateInterval('P' . $wd . 'D'));
+		
 		print "<TABLE Border=1>";
 		print "<TR><TH COLSPAN=7>$month $year</TR>";
 		print "<TR><TH>SUN<TH>MON<TH>TUE<TH>WED<TH>THU<TH>FRI<TH>SAT</TR>";
 		for ($j=0;$j<7*6;$j++) {
+			$cdom=$k->format('j');
 			if ($j%7==0) {
 				print "<TR>";
 			}
-			$cdom=$k->format('j');
-			$checkdom=$today->format('j');
-			if (($dom==$curday) && ($month==$curmonth) && ($year==$curyear)) {
+			if (($cdom==$curday) && ($month==$curmon) && ($year==$curyear)) {
 				print "<TD ALIGN='CENTER' BGCOLOR='LightGreen'>$cdom";
 			} else if ($j<7 && $cdom>7) { #make bg for previous month days, no bg if month starts on Sun
 				print "<TD ALIGN='CENTER' BGCOLOR='Gray'>$cdom";
