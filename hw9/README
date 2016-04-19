@@ -1,12 +1,13 @@
-Steps to get the webserver running:
+Steps to get the webserver running (limited success):
 
 $ sudo apt-get install lighttpd php5 php5-cgi php5-sqlite php5-gd
+$ sudo systemctl stop apache
 $ sudo systemctl disable apache
 $ sudo lighty-enable-mod fastcgi
 $ sudo lightly-enable-mod fastcgi-php
 $ sudo systemctl restart lighttpd
 
-At this point, if you browse to localhost, you'll see the default lighttpd page.
+At this point, if you browse to localhost, you'll (hopefully) see the default lighttpd page.
 You can put a .php file in your default webserver directory:
 
 $ sudo vim /var/www/html/info.php
