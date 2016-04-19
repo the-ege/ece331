@@ -6,7 +6,9 @@ Year: <input type='text' name='year'>
 </FORM>
 
 <?php
-if (array_key_exists("year",$_POST)) {
+if (!array_key_exists("year",$_POST)) {
+	mkcal(2016);
+} else {
 	mkcal($_POST['year']);
 }
 
@@ -20,6 +22,8 @@ function mkcal($year) {
 	#Get start of year
 	$k=new DateTime();
 	$k->setDate($year,1,1);
+	
+	print "<TABLE Border=3 CELLPADDING=10 CELLSPACING=3><TD>";
 	
 	for ($i=1;$i<13;$i++) {
 		$dom=$k->format('j'); #dom w/o leading zeros
@@ -51,10 +55,16 @@ function mkcal($year) {
 			}
 			$k->add(new DateInterval('P1D'));
 		}
-		
-		$k->setDate($year,$i+1,1);
 			
 		print "</TABLE>";
+
+		if (($k->format('n')-1)%3 == 0) { #make rows of three columns apiece
+			print "</TD></TR><TR>";
+		}
+		print "<TD>";
+
+		$k->setDate($year,$i+1,1);
 	}
+	print "</TABLE>";
 }
 ?>
