@@ -58,10 +58,12 @@ function mkcal($year) {
 			
 		print "</TABLE>";
 
-		if (($k->format('n')-1)%3 == 0) { #make rows of three columns apiece
+		if ($i%3 == 0) { #make rows of three columns apiece
 			print "</TD></TR><TR>";
 		}
-		print "<TD>";
+		if ($i != 12) {
+			print "<TD>";
+		}
 
 		$k->setDate($year,$i+1,1);
 	}
