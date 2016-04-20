@@ -1,7 +1,7 @@
 #Makefile for user-space code
 
 TARGET=ax25
-OBJS=main.o crc.o ax25.o
+OBJS=main.o crc.o ax25.o encoder.o
 CFLAGS=-g -Wall
 LIBS=-lm
 

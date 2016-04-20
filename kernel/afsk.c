@@ -18,10 +18,13 @@
 #include <linux/stat.h>
 #include <linux/delay.h>
 #include <linux/string.h>
+#include <asm/uaccess.h>
 
 #define AFSK_NOSTUFF 0
 #define AFSK_STUFF 1
 #define AX25_DELIM 0x7E
+
+//Error codes: /usr/src/linux-4.1.18/include/uapi/asm-generic/errno-base.h
 
 // Forward declarations
 static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
@@ -54,6 +57,7 @@ struct afsk_data_t {
 	struct gpio_desc *m_sb;		// gpiod Mark/Space bar pin
 	struct gpio_desc *ptt;		// gpiod Push to talk pin
 	struct gpio_desc *shdn;		// Shutdown pin
+	struct mutex lock;			// Mutex lock
 	u32 delim_cnt;				// Delimiter count
 	u8 *delim_buf;				// Delimtter buffer - changes size in ioctl
 };
@@ -330,6 +334,9 @@ static int afsk_probe(struct platform_device *pdev)
 	// Register the device
 	register_chrdev(afsk_dat->major,"afsk",&afsk_fops);
 
+	//Initialize the mutex
+	mutex_init(&(afsk_dat->lock));
+
 	printk(KERN_INFO "Registered\n");
 	dev_info(dev, "Initialized");
 	return 0;
@@ -427,24 +434,51 @@ MODULE_DESCRIPTION("AFSK");
 //Dynamically change delimiter buffer size
 static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-	//check IOCTL number - /usr/src/linux/Documentation/ioctl/ioctl-number.txt?
-	if (cmd != 0x70) {
-		return -EINVAL; //maybe a better error number?
-	}
+	int status;
+	unsigned long *copy = NULL;
+	//check IOCTL number - /usr/src/linux/Documentation/ioctl/ioctl-number.txt?i
 	//locking
-	atomic_set(&(filp->f_pos_lock.count),0); //0 = locked
-	//change buffer size
-	if (afsk_data_fops->delim_buf != NULL) { //previously allocated
-		kfree(afsk_data_fops->delim_buf);
+	status = mutex_lock_interruptible(&(afsk_data_fops->lock));
+	if (status) {
+		goto ioctl_err_interrupt;
 	}
-	afsk_data_fops->delim_buf = kmalloc(arg,GFP_ATOMIC); //arg number of bytes to allocate
-	//GFP_ATOMIC - flag to tell the kernel not to sleep in kmalloc()
-	memset(afsk_data_fops->delim_buf,0x7E,arg);
-	afsk_data_fops->delim_cnt = arg;
+
+	if (cmd == 0x70) { //IOCTL_SET_DELIM
+		if (afsk_data_fops->delim_buf != NULL) { //previously allocated
+			kfree(afsk_data_fops->delim_buf);
+		}
+		status = copy_from_user(copy,&arg,4); //4 bytes in a long
+		if (status) {
+			goto ioctl_err_set;
+		}
+		afsk_data_fops->delim_cnt = *copy;
+		afsk_data_fops->delim_buf = kmalloc(*copy,GFP_ATOMIC); //allocate the specified number of bytes
+		//GFP_ATOMIC - flag to tell the kernel not to sleep in kmalloc()
+		memset(afsk_data_fops->delim_buf,AX25_DELIM,*copy);
+		printk(KERN_INFO "Set delimeter count\n");
+	} else if (cmd == 0x71) { //IOCTL_GET_DELIM
+		*copy = afsk_data_fops->delim_cnt;
+		status = copy_to_user(&arg,copy,4);
+		if (status) {
+			goto ioctl_err_get;
+		}
+	} else {
+		return -EINVAL;
+	}
 	//unlocking
-	atomic_set(&(filp->f_pos_lock.count),1); //1 = unlocked
-		
+	mutex_unlock(&(afsk_data_fops->lock));
+
 	return 0;
+
+ioctl_err_interrupt:	
+	printk(KERN_INFO "Interrupted trying to get lock!\n");
+	return -EACCES;
+ioctl_err_set:
+	printk(KERN_INFO "Could not copy all bytes from user space\n");
+	return -EACCES;
+ioctl_err_get:
+	printk(KERN_INFO "Could not copy all bytes to user space\n");
+	return -EACCES;
 }
 
 //Write system call - data goes to encoder buffer for delimination, bit stuffing,
@@ -453,16 +487,27 @@ static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t cou
 {
 	int i;
 	int j; //loop counters
+	int status; //error check variable
 	int num; //this value will determine the print
 	int stuffcount = 0; //stuffs a 0 when it reaches 5
 	int bitcount = 0; //we want to print nicely, even when stuffing bits
 	int state = 1; //1->S, 0->M
 	int stuff_flag = 1;
+	char *copy = NULL; //For copy_from_user function
+
+	status = copy_from_user(copy,buff,count);
+	if (status != 0) {
+		goto write_err;
+	}
 
 	//locking
-	atomic_set(&(filp->f_pos_lock.count),0); //0 = locked
-	//take care of blocking here
+	status = mutex_lock_interruptible(&(afsk_data_fops->lock)); //interruptible takes care of blocking
+	if (status) {
+		goto write_err;
+	}
 	//bit stuff
+	//NRZI
+	//pin toggle
 
 	gpiod_set_value(afsk_data_fops->ptt,1); //Enable push-to-talk
 	mdelay(5); //delay 5ms
@@ -471,7 +516,7 @@ static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t cou
 	for (i=0;i<count;i++) {
 		/* Print the binary value LSb first */
 		for (j=0;j<8;j++) { //always dealing with 1B of data at a time
-			num = buff[i] & (0x01 << j);
+			num = copy[i] & (0x01 << j);
 			if (num != 0) { //the value is "1"
 				gpiod_set_value(afsk_data_fops->m_sb,state);
 				printk(KERN_INFO "%c ", state? 'S' : 'M');
@@ -501,17 +546,19 @@ static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t cou
 
 	gpiod_set_value(afsk_data_fops->m_sb,state);
 	printk(KERN_INFO "%c\n", state? 'S' : 'M');
-	//NRZI
-	//pin toggle
 
 	gpiod_set_value(afsk_data_fops->enable,0); //Disable the enable pin
 	mdelay(5); //delay 5ms
 	gpiod_set_value(afsk_data_fops->ptt,0); //disable push-to-talk pin
 	
 	//unlocking
-	atomic_set(&(filp->f_pos_lock.count),1); //1 = unlocked
+	mutex_unlock(&(afsk_data_fops->lock));
 
 	return 0;
+
+write_err:
+	printk(KERN_INFO "Interrupted trying to obtain lock!\n");
+	return -EACCES;
 }
 
 //Open syscall

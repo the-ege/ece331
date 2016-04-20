@@ -77,6 +77,5 @@ uint8_t* ax25(char *callsign, char *info, int size)
 	write(1,buffer,25+size);
 
 	return buffer;
-	//free(buffer);	
 
 }
