@@ -48,31 +48,32 @@ int main(int argc, char* argv[])
 
 	/* Set delimeter size */
 	status=ioctl(fd,IOCTL_SET_DELIM,13);
-	status=ioctl(fd,IOCTL_GET_DELIM,delim);
+//	status=ioctl(fd,IOCTL_GET_DELIM,delim);
+//	printf("Delim size is: %lu\n",*delim);
 
 	/* Get the ax25 frame */
-	buffer = ax25(callsign,data_out,size);
-	if (buffer == NULL) {
-		fputs("AX25 failure!\n",stderr);
-		return 2;
-	}
+//	buffer = ax25(callsign,data_out,size);
+//	if (buffer == NULL) {
+//		fputs("AX25 failure!\n",stderr);
+//		return 2;
+//	}
 
 	/* Set up buffers */
-	msg = (char*)malloc(); //These should be the same size
+//	msg = (char*)malloc(size*sizeof(char)); //These should be the same size
 
 	/* Compare the user space encoding of the frame to kernel space */
 	/* Do conversion from uint8_t to char because I'm dumb */
-	for (i=0;i<size;i++) {
-		msg[i] = (char)buffer[i];
-	}
-	encode(msg,size,1);
+//	for (i=0;i<size;i++) {
+//		msg[i] = (char)buffer[i];
+//	}
+//	encode(msg,size,1);
 
-	write(fd,buffer,size);
+//	write(fd,buffer,size);
 
 	close(fd);
-	free(buffer);
-	free(msg);
-	msg = NULL;
-	buffer = NULL;
+//	free(buffer);
+//	free(msg);
+//	msg = NULL;
+//	buffer = NULL;
 	return 0;
 }

@@ -331,11 +331,11 @@ static int afsk_probe(struct platform_device *pdev)
 	// Set the delim buffer values
 	memset(afsk_dat->delim_buf,AX25_DELIM,afsk_dat->delim_cnt);
 
-	// Register the device
-	register_chrdev(afsk_dat->major,"afsk",&afsk_fops);
-
 	//Initialize the mutex
 	mutex_init(&(afsk_dat->lock));
+
+	// Register the device
+	register_chrdev(afsk_dat->major,"afsk",&afsk_fops);
 
 	printk(KERN_INFO "Registered\n");
 	dev_info(dev, "Initialized");
@@ -435,7 +435,8 @@ MODULE_DESCRIPTION("AFSK");
 static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	int status;
-	unsigned long *copy = NULL;
+	unsigned long *copy;
+	copy = kmalloc(sizeof(u32),GFP_ATOMIC); //init to get rid of compiler warnings
 	//check IOCTL number - /usr/src/linux/Documentation/ioctl/ioctl-number.txt?i
 	//locking
 	status = mutex_lock_interruptible(&(afsk_data_fops->lock));
@@ -447,7 +448,7 @@ static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		if (afsk_data_fops->delim_buf != NULL) { //previously allocated
 			kfree(afsk_data_fops->delim_buf);
 		}
-		status = copy_from_user(copy,&arg,4); //4 bytes in a long
+		status = copy_from_user(copy,&arg,sizeof(u32)); //4 bytes in a long
 		if (status) {
 			goto ioctl_err_set;
 		}
@@ -458,27 +459,37 @@ static long afsk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		printk(KERN_INFO "Set delimeter count\n");
 	} else if (cmd == 0x71) { //IOCTL_GET_DELIM
 		*copy = afsk_data_fops->delim_cnt;
-		status = copy_to_user(&arg,copy,4);
+		status = copy_to_user(&arg,copy,sizeof(unsigned long));
 		if (status) {
 			goto ioctl_err_get;
 		}
+		printk(KERN_INFO "Got delimeter count\n");
 	} else {
+		kfree(copy);
+		copy = NULL;
 		return -EINVAL;
 	}
 	//unlocking
 	mutex_unlock(&(afsk_data_fops->lock));
-
+	kfree(copy);
+	copy = NULL;
 	return 0;
 
 ioctl_err_interrupt:	
 	printk(KERN_INFO "Interrupted trying to get lock!\n");
+	kfree(copy);
+	copy = NULL;
 	return -EACCES;
 ioctl_err_set:
 	printk(KERN_INFO "Could not copy all bytes from user space\n");
-	return -EACCES;
+	kfree(copy);
+	copy = NULL;
+	return -EACCES; //change this
 ioctl_err_get:
 	printk(KERN_INFO "Could not copy all bytes to user space\n");
-	return -EACCES;
+	kfree(copy);
+	copy = NULL;
+	return -EACCES; //change this
 }
 
 //Write system call - data goes to encoder buffer for delimination, bit stuffing,
@@ -493,17 +504,18 @@ static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t cou
 	int bitcount = 0; //we want to print nicely, even when stuffing bits
 	int state = 1; //1->S, 0->M
 	int stuff_flag = 1;
-	char *copy = NULL; //For copy_from_user function
+	char *copy; //For copy_from_user function
+	copy = kmalloc(sizeof(buff),GFP_ATOMIC); //init to get rid of compiler warnings
 
 	status = copy_from_user(copy,buff,count);
-	if (status != 0) {
-		goto write_err;
+	if (status) {
+		goto write_err_get;
 	}
 
 	//locking
 	status = mutex_lock_interruptible(&(afsk_data_fops->lock)); //interruptible takes care of blocking
 	if (status) {
-		goto write_err;
+		goto write_err_interrupt;
 	}
 	//bit stuff
 	//NRZI
@@ -553,12 +565,20 @@ static ssize_t afsk_write(struct file *filp, const char __user *buff, size_t cou
 	
 	//unlocking
 	mutex_unlock(&(afsk_data_fops->lock));
-
+	kfree(copy);
+	copy = NULL;
 	return 0;
 
-write_err:
+write_err_interrupt:
 	printk(KERN_INFO "Interrupted trying to obtain lock!\n");
+	kfree(copy);
+	copy = NULL;
 	return -EACCES;
+write_err_get:
+	printk(KERN_INFO "Not all data copied from user\n");
+	kfree(copy);
+	copy = NULL;
+	return -EACCES; //change this
 }
 
 //Open syscall
@@ -567,11 +587,13 @@ static int afsk_open(struct inode *inode, struct file *filp)
 
 	if (filp->f_flags & O_RDONLY) return -EINVAL;
 	if (filp->f_flags & O_RDWR) return -EINVAL;
+	printk(KERN_INFO "Successfully opened!\n");
 	return 0; //user specified O_WRONLY
 }
 
 //Close syscall
 static int afsk_release(struct inode *inode, struct file *filp)
 {
+	printk(KERN_INFO "Successfully closed!\n");
 	return 0;
 }
